@@ -58,7 +58,7 @@
             background: #0f0f12;
             border:  1px solid #27272a;
             border-radius:  6px;
-            margin-bottom: 1. 5rem;
+            margin-bottom: 1.5rem;
         }
         .wallet-info { display: flex; align-items: center; gap: 0.625rem; }
         .wallet-dot { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; }
@@ -444,7 +444,7 @@
             display: flex;
             align-items: center;
             justify-content:  space-between;
-            padding: 1rem 1. 25rem;
+            padding: 1rem 1.25rem;
             border-bottom: 1px solid #27272a;
         }
         .modal-title { font-size:  1rem; font-weight:  600; }
@@ -666,7 +666,7 @@
                     <button class="link-account-btn" onclick="switchTab('accounts')">+ Link</button>
                 </div>
                 <div class="account-list" id="accountListPreview">
-                    <div class="no-accounts">No accounts linked.  <a href="#" onclick="switchTab('accounts'); return false;" style="color: #3b82f6;">Link one to start. </a></div>
+                    <div class="no-accounts">No accounts linked. <a href="#" onclick="switchTab('accounts'); return false;" style="color: #3b82f6;">Link one to start.</a></div>
                 </div>
             </div>
 
@@ -703,7 +703,7 @@
             </div>
 
             <div class="info-box warning visible" id="verificationNotice">
-                ⚠️ <strong>Verification Required:</strong> Winners must submit a screenshot of the match result.  The opponent has 24h to dispute. 
+                ⚠️ <strong>Verification Required:</strong> Winners must submit a screenshot of the match result. The opponent has 24h to dispute.
             </div>
 
             <div class="info-box" id="publicInfo">
@@ -756,7 +756,7 @@
         <!-- Accounts Tab -->
         <div id="accounts-tab" class="tab-content">
             <div class="info-box info visible">
-                🔗 Link your gaming accounts to verify match results.  We use official APIs where available.
+                🔗 Link your gaming accounts to verify match results. We use official APIs where available.
             </div>
 
             <div class="platform-cards" id="platformCards">
@@ -775,7 +775,7 @@
         </div>
         <div class="modal-body">
             <div class="info-box info visible" style="margin-bottom: 1rem;">
-                📸 Upload a screenshot showing the final match result with both players/teams visible. 
+                📸 Upload a screenshot showing the final match result with both players/teams visible.
             </div>
 
             <div class="form-group">
@@ -830,7 +830,7 @@
         </div>
         <div class="modal-body">
             <div class="info-box warning visible" style="margin-bottom: 1rem;">
-                ⚠️ False disputes may result in account penalties.  Only dispute if you have evidence. 
+                ⚠️ False disputes may result in account penalties. Only dispute if you have evidence.
             </div>
 
             <div class="form-group">
@@ -895,7 +895,7 @@
         </div>
         <div class="modal-body">
             <div class="info-box info visible" style="margin-bottom: 1rem;">
-                🔐 We'll verify your account ownership.  This helps prevent fraud. 
+                🔐 We'll verify your account ownership. This helps prevent fraud.
             </div>
 
             <div class="form-group">
@@ -983,12 +983,12 @@
     ];
 
     // Linked accounts (would be stored in backend/contract in production)
-    let linkedAccounts = JSON.parse(localStorage. getItem('linkedAccounts') || '[]');
+    let linkedAccounts = JSON.parse(localStorage.getItem('linkedAccounts') || '[]');
 
     // Games with platform requirements
     const games = [
-        { id: 1, name: "Valorant", category: "fps", abbr: "VAL", format: "5v5", pool: "2. 5", active: 156, hot: true, platform: 'riot' },
-        { id: 2, name: "League of Legends", category: "moba", abbr:  "LoL", format:  "5v5", pool: "5. 0", active: 243, hot: true, platform: 'riot' },
+        { id: 1, name: "Valorant", category: "fps", abbr: "VAL", format: "5v5", pool: "2.5", active: 156, hot: true, platform: 'riot' },
+        { id: 2, name: "League of Legends", category: "moba", abbr: "LoL", format: "5v5", pool: "5.0", active: 243, hot: true, platform: 'riot' },
         { id: 3, name: "Counter-Strike 2", category: "fps", abbr: "CS2", format:  "5v5", pool: "3.2", active: 198, hot: true, platform: 'steam' },
         { id: 4, name: "Fortnite", category:  "battle-royale", abbr: "FN", format: "Solo/Duo", pool: "1.8", active: 312, hot: true, platform: 'epic' },
         { id: 5, name: "Street Fighter 6", category: "fighting", abbr:  "SF6", format: "1v1", pool:  "0.8", active: 67, hot: false, platform: 'steam' },
@@ -1001,7 +1001,7 @@
 
     /***** UI HANDLERS *****/
     function switchTab(tab) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList. remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         
         const tabs = ['wager', 'games', 'accounts'];
@@ -1034,7 +1034,7 @@
         }).join('');
         
         if (linkedAccounts.length > 2) {
-            container.innerHTML += `<div style="text-align: center; padding: 0. 5rem;"><a href="#" onclick="switchTab('accounts'); return false;" style="color: #3b82f6; font-size: 0.75rem;">+${linkedAccounts. length - 2} more</a></div>`;
+            container.innerHTML += `<div style="text-align: center; padding: 0.5rem;"><a href="#" onclick="switchTab('accounts'); return false;" style="color: #3b82f6; font-size: 0.75rem;">+${linkedAccounts.length - 2} more</a></div>`;
         }
     }
 
@@ -1049,10 +1049,10 @@
         const btn = document.getElementById('submitBtn');
         if (type === 'public') {
             btn.textContent = 'Post Challenge';
-            btn. classList.remove('btn-primary');
+            btn.classList.remove('btn-primary');
             btn.classList.add('btn-secondary');
         } else {
-            btn. textContent = 'Create Wager';
+            btn.textContent = 'Create Wager';
             btn.classList.remove('btn-secondary');
             btn.classList.add('btn-primary');
         }
@@ -1063,7 +1063,7 @@
         const trigger = document.getElementById('gameTrigger');
         const dropdown = document.getElementById('gameDropdown');
         const isOpen = dropdown.classList.contains('open');
-        trigger.classList.toggle('open', ! isOpen);
+        trigger.classList.toggle('open', !isOpen);
         dropdown.classList.toggle('open', !isOpen);
 
         if (!isOpen) {
@@ -1072,7 +1072,7 @@
                 return b.active - a.active;
             });
             dropdown.innerHTML = sorted.map(g => {
-                const hasAccount = linkedAccounts. some(a => a.platform === g.platform);
+                const hasAccount = linkedAccounts.some(a => a.platform === g.platform);
                 const platform = platforms.find(p => p.id === g.platform);
                 return `
                     <div class="game-option ${hasAccount ? '' : 'disabled'}" onclick="${hasAccount ? `selectGame(${g.id})` : 'return false;'}">
@@ -1084,7 +1084,7 @@
                                                             </div>
                         </div>
                         ${g.hot ? '<span class="game-option-badge">Hot</span>' :  ''}
-                        ${! hasAccount ? '<span style="font-size: 0.625rem; color: #ef4444;">Link account</span>' : ''}
+                        ${!hasAccount ? '<span style="font-size: 0.625rem; color: #ef4444;">Link account</span>' : ''}
                     </div>
                 `;
             }).join('');
@@ -1093,10 +1093,10 @@
 
     function selectGame(id) {
         const game = games.find(g => g.id === id);
-        if (! game) return;
+        if (!game) return;
         
         const hasAccount = linkedAccounts.some(a => a.platform === game.platform);
-        if (! hasAccount) {
+        if (!hasAccount) {
             alert(`Please link your ${platforms.find(p => p.id === game.platform)?.name} account first. `);
             switchTab('accounts');
             return;
@@ -1111,7 +1111,7 @@
         document.getElementById('gameDropdown').classList.remove('open');
         document.getElementById('displayGameIcon').textContent = game.abbr;
         document.getElementById('displayGameName').textContent = game.name;
-        document.getElementById('displayGameMeta').textContent = `${game.category. toUpperCase()} · ${game.format}`;
+        document.getElementById('displayGameMeta').textContent = `${game.category.toUpperCase()} · ${game.format}`;
         document.getElementById('selectedGameDisplay').classList.add('visible');
     }
 
@@ -1126,7 +1126,7 @@
 
     document.addEventListener('click', (e) => {
         const selector = document.querySelector('. game-selector');
-        if (selector && ! selector.contains(e. target)) {
+        if (selector && !selector.contains(e. target)) {
             document.getElementById('gameTrigger').classList.remove('open');
             document.getElementById('gameDropdown').classList.remove('open');
         }
@@ -1163,16 +1163,16 @@
 
     /***** FILE UPLOAD HANDLERS *****/
     function handleProofUpload(event) {
-        const file = event.target. files[0];
+        const file = event.target.files[0];
         if (!file) return;
         
-        if (! file.type.startsWith('image/')) {
+        if (!file.type.startsWith('image/')) {
             alert('Please upload an image file');
             return;
         }
         
-        if (file. size > 10 * 1024 * 1024) {
-            alert('File too large.  Max 10MB.');
+        if (file.size > 10 * 1024 * 1024) {
+            alert('File too large. Max 10MB.');
             return;
         }
         
@@ -1184,7 +1184,7 @@
         const file = event.target.files[0];
         if (!file) return;
         
-        if (!file.type. startsWith('image/')) {
+        if (!file.type.startsWith('image/')) {
             alert('Please upload an image file');
             return;
         }
@@ -1199,7 +1199,7 @@
     }
 
     function displayUploadedFile(areaId, file) {
-        const area = document. getElementById(areaId);
+        const area = document.getElementById(areaId);
         area.classList.add('has-file');
         
         const reader = new FileReader();
@@ -1229,9 +1229,9 @@
     // Drag and drop support
     ['proofUploadArea', 'disputeUploadArea'].forEach(areaId => {
         const area = document.getElementById(areaId);
-        if (! area) return;
+        if (!area) return;
         
-        area. addEventListener('dragover', (e) => {
+        area.addEventListener('dragover', (e) => {
             e.preventDefault();
             area.classList.add('dragover');
         });
@@ -1240,7 +1240,7 @@
             area.classList.remove('dragover');
         });
         
-        area. addEventListener('drop', (e) => {
+        area.addEventListener('drop', (e) => {
             e.preventDefault();
             area.classList.remove('dragover');
             
@@ -1266,8 +1266,8 @@
     /***** PLATFORMS / ACCOUNT LINKING *****/
     function renderPlatforms() {
         const container = document.getElementById('platformCards');
-        container. innerHTML = platforms.map(p => {
-            const linked = linkedAccounts. find(a => a.platform === p. id);
+        container.innerHTML = platforms.map(p => {
+            const linked = linkedAccounts.find(a => a.platform === p.id);
             return `
                 <div class="platform-card">
                     <div class="platform-card-left">
@@ -1338,11 +1338,11 @@
 
     /***** ETHERS + CONTRACT *****/
     async function ensureProvider() {
-        if (! window.ethereum) throw new Error('Please install MetaMask');
-        if (!provider) provider = new ethers. BrowserProvider(window. ethereum);
+        if (!window.ethereum) throw new Error('Please install MetaMask');
+        if (!provider) provider = new ethers.BrowserProvider(window.ethereum);
         const network = await provider.getNetwork();
         if (REQUIRED_CHAIN_ID && Number(network.chainId) !== Number(REQUIRED_CHAIN_ID)) {
-            throw new Error(`Wrong network.  Please switch to chain ID ${REQUIRED_CHAIN_ID}. `);
+            throw new Error(`Wrong network. Please switch to chain ID ${REQUIRED_CHAIN_ID}.`);
         }
         return provider;
     }
@@ -1352,14 +1352,14 @@
             await ensureProvider();
             const accounts = await provider.send("eth_requestAccounts", []);
             signer = await provider.getSigner();
-            contract = new ethers. Contract(CONTRACT_ADDRESS, ABI, signer);
+            contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
             userAccount = accounts[0];
             const short = `${userAccount.slice(0, 6)}...${userAccount.slice(-4)}`;
             document.getElementById('walletAddress').textContent = short;
             document.getElementById('walletDot').classList.add('connected');
             const btn = document.getElementById('connectBtn');
             btn.textContent = 'Connected';
-            btn. disabled = true;
+            btn.disabled = true;
         } catch (e) {
             alert(e.message || 'Failed to connect');
             console.error(e);
@@ -1374,7 +1374,7 @@
         document.getElementById('displayAmount').textContent = amount.toFixed(4) + ' ETH';
         document.getElementById('displayFee').textContent = '-' + (amount * 2 * 0.03).toFixed(4) + ' ETH';
         document.getElementById('displayTotal').textContent = total.toFixed(4) + ' ETH';
-        document. getElementById('result').style.display = 'block';
+        document.getElementById('result').style.display = 'block';
     }
 
     async function submitWager() {
@@ -1426,7 +1426,7 @@
             return;
         }
         
-        if (!signer || ! contract) {
+        if (!signer || !contract) {
             alert('Please connect your wallet');
             return;
         }
@@ -1436,11 +1436,11 @@
             const proofHash = await uploadToIPFS(proofFile);
             
             // Submit to contract
-            const tx = await contract. submitProof(currentWagerId, proofHash);
+            const tx = await contract.submitProof(currentWagerId, proofHash);
             await tx.wait();
             
             closeModal('proofModal');
-            alert('Proof submitted!  Your opponent has 24 hours to dispute.');
+            alert('Proof submitted! Your opponent has 24 hours to dispute.');
             loadOpenWagers();
         } catch (e) {
             alert(e?.reason || e?.message || 'Failed to submit proof');
@@ -1466,7 +1466,7 @@
             return;
         }
         
-        if (!signer || ! contract) {
+        if (!signer || !contract) {
             alert('Please connect your wallet');
             return;
         }
@@ -1483,7 +1483,7 @@
             await tx.wait();
             
             closeModal('disputeModal');
-            alert('Dispute submitted! An admin will review both sides.');
+            alert('Dispute submitted!An admin will review both sides.');
             loadOpenWagers();
         } catch (e) {
             alert(e?.reason || e?.message || 'Failed to submit dispute');
@@ -1556,7 +1556,7 @@
                 </div>
                 <div class="verification-text">
                     ${wager.status === 0 ? 'Waiting for opponent to accept the wager.' : ''}
-                    ${wager.status === 1 ? 'Match in progress.  Winner should submit proof when complete.' : ''}
+                    ${wager.status === 1 ? 'Match in progress. Winner should submit proof when complete.' : ''}
                     ${wager.status === 2 ? `Proof submitted by ${shorten(wager. claimant)}. ${timeRemaining}` : ''}
                     ${wager. disputed ? 'This wager is under review by admins.' : ''}
                     ${wager.status === 4 ? 'This wager has been resolved and paid out.' : ''}
@@ -1652,9 +1652,9 @@
         const footer = document.getElementById('wagerModalFooter');
         let actions = '<button class="btn btn-outline" onclick="closeModal(\'wagerModal\')">Close</button>';
         
-        if (wager.status === 0 && ! isCreator && wager.opponent === ethers.ZeroAddress) {
+        if (wager.status === 0 && !isCreator && wager.opponent === ethers.ZeroAddress) {
             actions += `<button class="btn btn-secondary" onclick="acceptWager(${wager.id}, ${wager.amount})">Accept Wager</button>`;
-        } else if (wager.status === 0 && ! isCreator && isOpponent) {
+        } else if (wager.status === 0 && !isCreator && isOpponent) {
             actions += `<button class="btn btn-secondary" onclick="acceptWager(${wager.id}, ${wager.amount})">Accept Challenge</button>`;
         } else if (wager.status === 1 && isParticipant) {
             actions += `<button class="btn btn-secondary" onclick="closeModal('wagerModal'); openModal('proofModal');">Submit Win Proof</button>`;
@@ -1674,10 +1674,10 @@
 
     async function acceptWager(id, amountEth) {
         try {
-            if (! signer || !contract) return alert('Connect your wallet first');
-            const tx = await contract. acceptWager(id, { value: ethers.parseEther(amountEth.toString()) });
+            if (!signer || !contract) return alert('Connect your wallet first');
+            const tx = await contract.acceptWager(id, { value: ethers.parseEther(amountEth.toString()) });
             await tx.wait();
-            alert('Wager accepted!  Good luck with your match.');
+            alert('Wager accepted! Good luck with your match.');
             closeModal('wagerModal');
             loadOpenWagers();
         } catch (e) {
@@ -1689,7 +1689,7 @@
     /***** WAGER LIST *****/
     async function loadOpenWagers() {
         const container = document.getElementById('gamesList');
-        container. innerHTML = '<div class="empty-state">Loading wagers...</div>';
+        container.innerHTML = '<div class="empty-state">Loading wagers...</div>';
         
         try {
             await ensureProvider();
@@ -1707,18 +1707,18 @@
                 amount: Number(ethers.formatEther(w.amount)),
                 status: Number(w.status),
                 gameId: w.gameId,
-                claimant: w. claimant,
-                proofHash: w. proofHash,
+                claimant: w.claimant,
+                proofHash: w.proofHash,
                 proofTimestamp: w.proofTimestamp,
                 disputed:  w.disputed
-            })).filter(w => w. status !== 5); // Exclude cancelled
+            })).filter(w => w.status !== 5); // Exclude cancelled
 
             filterGames();
         } catch (e) {
             // For demo without contract
             openWagers = [
                 { id: 0, creator: '0x1234567890abcdef1234567890abcdef12345678', opponent:  ethers.ZeroAddress, amount: 0.1, status: 0, gameId: '1', claimant: ethers.ZeroAddress, proofHash:  '', proofTimestamp: 0, disputed: false },
-                { id: 1, creator: '0xabcdef1234567890abcdef1234567890abcdef12', opponent: '0x9876543210fedcba9876543210fedcba98765432', amount: 0.25, status: 2, gameId: '3', claimant:  '0xabcdef1234567890abcdef1234567890abcdef12', proofHash: 'ipfs://QmExample123', proofTimestamp: Math.floor(Date. now()/1000) - 3600, disputed: false },
+                { id: 1, creator: '0xabcdef1234567890abcdef1234567890abcdef12', opponent: '0x9876543210fedcba9876543210fedcba98765432', amount: 0.25, status: 2, gameId: '3', claimant:  '0xabcdef1234567890abcdef1234567890abcdef12', proofHash: 'ipfs://QmExample123', proofTimestamp: Math.floor(Date.now()/1000) - 3600, disputed: false },
                 { id:  2, creator:  '0x5555555555555555555555555555555555555555', opponent:  '0x6666666666666666666666666666666666666666', amount: 0.5, status: 3, gameId: '2', claimant:  '0x5555555555555555555555555555555555555555', proofHash: 'ipfs://QmDisputed456', proofTimestamp: Math.floor(Date.now()/1000) - 7200, disputed: true }
             ];
             filterGames();
@@ -1730,9 +1730,9 @@
         let filtered = [... openWagers];
 
         if (currentCategory === 'pending') {
-            filtered = filtered.filter(w => w.status === 2 && ! w.disputed);
+            filtered = filtered.filter(w => w.status === 2 && !w.disputed);
         } else if (currentCategory === 'disputed') {
-            filtered = filtered.filter(w => w. disputed);
+            filtered = filtered.filter(w => w.disputed);
         } else if (currentCategory === 'mine' && userAccount) {
             filtered = filtered.filter(w => 
                 w.creator.toLowerCase() === userAccount.toLowerCase() ||
@@ -1753,14 +1753,14 @@
 
     function filterCategory(cat, btn) {
         currentCategory = cat;
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList. remove('active'));
-        btn.classList. add('active');
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
         filterGames();
     }
 
     function renderGames(list) {
         const container = document.getElementById('gamesList');
-        if (! list || ! list.length) {
+        if (!list || !list.length) {
             container.innerHTML = '<div class="empty-state">No wagers found.</div>';
             return;
         }
