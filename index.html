@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wager — Crypto Gaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #09090b;
+            color:  #fafafa;
+            min-height: 100vh;
+            padding: 3rem 1rem;
+        }
+        .app-wrapper { max-width: 520px; margin: 0 auto; }
+        .header { margin-bottom: 2rem; }
+        .header h1 { font-size: 1.5rem; font-weight: 600; color: #fafafa; letter-spacing: -0.02em; }
+        .header p { color: #71717a; font-size: 0.875rem; margin-top: 0.25rem; }
+
+        /* Tabs */
+        .tab-nav { display: flex; gap: 0.25rem; margin-bottom: 1.5rem; border-bottom: 1px solid #27272a; }
+        .tab-btn {
+            padding: 0.75rem 1rem;
+            border:  none;
+            background: transparent;
+            color: #71717a;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor:  pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+        .tab-btn:hover { color: #a1a1aa; }
+        .tab-btn.active { color: #fafafa; }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom:  -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #fafafa;
+        }
+
+        /* Container */
+        .container { background: #18181b; padding:  1.5rem; border-radius: 8px; border: 1px solid #27272a; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Wallet */
+        .wallet-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: #0f0f12;
+            border:  1px solid #27272a;
+            border-radius:  6px;
+            margin-bottom: 1.5rem;
+        }
+        .wallet-info { display: flex; align-items: center; gap: 0.625rem; }
+        .wallet-dot { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; }
+        .wallet-dot.connected { background: #22c55e; }
+        .wallet-address { font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; color:  #a1a1aa; }
+        .wallet-btn {
+            background: transparent;
+            border:  1px solid #3f3f46;
+            color:  #fafafa;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor:  pointer;
+            transition: all 0.15s;
+        }
+        .wallet-btn:hover { background: #27272a; border-color: #52525b; }
+        .wallet-btn:disabled { opacity: 0.5; cursor: default; }
+
+        /* Linked Accounts Section */
+        .linked-accounts {
+            background: #0f0f12;
+            border: 1px solid #27272a;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .linked-accounts-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+        .linked-accounts-title {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color:  #a1a1aa;
+        }
+        .link-account-btn {
+            background: #3b82f6;
+            border: none;
+            color: #fff;
+            padding:  0.375rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            cursor:  pointer;
+            transition: background 0.15s;
+        }
+        .link-account-btn:hover { background: #2563eb; }
+        .account-list { display:  flex; flex-direction:  column; gap: 0.5rem; }
+        .account-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.75rem;
+            background: #18181b;
+            border-radius: 4px;
+        }
+        .account-item-left { display: flex; align-items: center; gap: 0.5rem; }
+        .account-icon {
+            width: 24px;
+            height: 24px;
+            background: #27272a;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size:  0.75rem;
+        }
+        .account-icon.riot { background: #eb0029; }
+        .account-icon.steam { background: #1b2838; }
+        .account-icon.epic { background: #313131; }
+        .account-name { font-size: 0.8125rem; font-family: 'JetBrains Mono', monospace; }
+        .account-status {
+            font-size: 0.6875rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 999px;
+        }
+        .account-status.verified { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+        .account-status.pending { background: rgba(234, 179, 8, 0.15); color: #eab308; }
+        .no-accounts { color: #52525b; font-size: 0.8125rem; text-align: center; padding: 1rem; }
+
+        /* Wager Type Selector */
+        .type-selector { display: flex; margin-bottom: 1.5rem; background: #0f0f12; border-radius: 6px; padding: 3px; }
+        .type-btn {
+            flex: 1;
+            padding: 0.625rem 1rem;
+            background: transparent;
+            border:  none;
+            color:  #71717a;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.15s;
+        }
+        .type-btn:hover { color: #a1a1aa; }
+        .type-btn.active { background: #27272a; color:  #fafafa; }
+
+        /* Form */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group.hidden { display: none; }
+        .form-group label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: #a1a1aa;
+            margin-bottom: 0.5rem;
+        }
+        input[type="text"], input[type="number"], input[type="search"], textarea {
+            width:  100%;
+            padding: 0.625rem 0.875rem;
+            background: #0f0f12;
+            border: 1px solid #27272a;
+            border-radius: 6px;
+            color: #fafafa;
+            font-size: 0.875rem;
+            font-family: 'JetBrains Mono', monospace;
+            transition: border-color 0.15s;
+        }
+        textarea { min-height: 80px; resize: vertical; font-family: 'Inter', sans-serif; }
+        input::placeholder, textarea::placeholder { color: #52525b; }
+        input:focus, textarea:focus { outline: none; border-color:  #52525b; }
+
+        /* Game Selector */
+        .game-selector { position: relative; }
+        .game-selector-trigger {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            background: #0f0f12;
+            border: 1px solid #27272a;
+            border-radius: 6px;
+            color: #fafafa;
+            font-size: 0.875rem;
+            text-align: left;
+            cursor:  pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: border-color 0.15s;
+        }
+        .game-selector-trigger:hover { border-color: #3f3f46; }
+        .game-selector-trigger.open { border-color:  #52525b; border-radius: 6px 6px 0 0; }
+        .game-selector-trigger.placeholder { color: #52525b; }
+        .game-selector-trigger.selected { display: flex; align-items: center; gap: 0.5rem; }
+        .game-selector-trigger.arrow { color: #52525b; font-size: 0.625rem; transition: transform 0.15s; }
+        .game-selector-trigger.open .arrow { transform: rotate(180deg); }
+
+        .game-dropdown {
+            position:  absolute;
+            top: 100%; left: 0; right: 0;
+            background: #18181b;
+            border: 1px solid #52525b;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+        }
+        .game-dropdown.open { display: block; }
+        .game-dropdown::-webkit-scrollbar { width: 4px; }
+        .game-dropdown::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 2px; }
+
+        .game-option {
+            padding:  0.625rem 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .game-option:hover { background: #27272a; }
+        .game-option-left { display: flex; align-items: center; gap: 0.625rem; }
+        .game-option-icon { width: 28px; height: 28px; background:  #27272a; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; }
+        .game-option-name { font-size: 0.8125rem; font-weight: 500; }
+        .game-option-meta { font-size: 0.6875rem; color: #71717a; }
+        .game-option-badge { font-size: 0.625rem; font-weight: 600; color: #f97316; text-transform: uppercase; letter-spacing: 0.02em; }
+        .game-option.disabled { opacity: 0.4; cursor: not-allowed; }
+        .game-option.disabled::after { content: '(Link account first)'; font-size: 0.625rem; color: #ef4444; margin-left: 0.5rem; }
+
+        /* Selected Game */
+        .selected-game-display {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: #0f0f12;
+            border:  1px solid #27272a;
+            border-radius:  6px;
+            margin-bottom: 1.25rem;
+        }
+        .selected-game-display.visible { display: flex; }
+        .selected-game-left { display: flex; align-items: center; gap: 0.625rem; }
+        .selected-game-icon { width: 32px; height: 32px; background:  #27272a; border-radius: 4px; display:  flex; align-items: center; justify-content: center; }
+        .selected-game-name { font-size: 0.875rem; font-weight: 500; }
+        .selected-game-type { font-size:  0.75rem; color: #71717a; }
+        .selected-game-remove { background: transparent; border: none; color: #71717a; font-size: 1rem; cursor: pointer; padding: 0.25rem; line-height: 1; }
+        .selected-game-remove:hover { color:  #ef4444; }
+
+        /* Info Box */
+        .info-box {
+            display: none;
+            padding: 0.75rem;
+            background: rgba(34, 197, 94, 0.08);
+            border:  1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 6px;
+            margin-bottom: 1.25rem;
+            font-size: 0.8125rem;
+            color: #86efac;
+            line-height: 1.5;
+        }
+        .info-box.visible { display: block; }
+        .info-box.warning {
+            background: rgba(234, 179, 8, 0.08);
+            border-color: rgba(234, 179, 8, 0.2);
+            color: #fde047;
+        }
+        .info-box.info {
+            background:  rgba(59, 130, 246, 0.08);
+            border-color: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+        }
+
+        /* Fee Notice */
+        .fee-notice { font-size: 0.75rem; color: #71717a; margin-bottom: 1.25rem; }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius:  6px;
+            font-size: 0.875rem;
+            font-weight:  500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background: #fafafa; color:  #09090b; }
+        .btn-primary:hover:not(:disabled) { background: #e4e4e7; }
+        .btn-secondary { background: #22c55e; color: #fff; }
+        .btn-secondary:hover:not(:disabled) { background: #16a34a; }
+        .btn-danger { background: #ef4444; color: #fff; }
+        .btn-danger:hover:not(:disabled) { background: #dc2626; }
+        .btn-outline {
+            background: transparent;
+            border:  1px solid #3f3f46;
+            color:  #fafafa;
+        }
+        .btn-outline:hover:not(:disabled) { background: #27272a; }
+
+        /* Result */
+        #result { display: none; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #27272a; }
+        .result-title { font-size:  0.8125rem; font-weight: 500; color: #a1a1aa; margin-bottom: 1rem; }
+        .result-row { display: flex; justify-content: space-between; padding: 0.5rem 0; font-size: 0.8125rem; }
+        .result-row span:first-child { color: #71717a; }
+        .result-row span:last-child { font-family: 'JetBrains Mono', monospace; color: #fafafa; }
+        .result-row.fee span:last-child { color:  #ef4444; }
+        .result-row.total { border-top: 1px dashed #27272a; margin-top: 0.5rem; padding-top: 1rem; font-weight: 500; }
+        .result-row.total span:last-child { color:  #22c55e; }
+        .result-note { margin-top: 1rem; padding:  0.625rem; background: #27272a; border-radius: 4px; font-size: 0.75rem; color: #a1a1aa; text-align: center; }
+
+        /* Games Tab */
+        .search-box { margin-bottom: 1rem; }
+        .filters { display: flex; gap: 0.375rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .filter-btn {
+            padding: 0.375rem 0.75rem;
+            background: transparent;
+            border:  1px solid #27272a;
+            border-radius: 4px;
+            color: #71717a;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .filter-btn:hover { border-color: #3f3f46; color: #a1a1aa; }
+        .filter-btn.active { background: #fafafa; border-color: #fafafa; color:  #09090b; }
+
+        .games-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 380px; overflow-y: auto; }
+        .games-list::-webkit-scrollbar { width: 4px; }
+        .games-list::-webkit-scrollbar-thumb { background:  #3f3f46; border-radius: 2px; }
+
+        .game-item {
+            display:  flex;
+            align-items: center;
+            padding: 0.75rem;
+            background: #0f0f12;
+            border: 1px solid #27272a;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .game-item:hover { border-color: #3f3f46; background: #1a1a1d; }
+        .game-item-icon { width: 40px; height: 40px; background:  #27272a; border-radius: 6px; display: flex; align-items:  center; justify-content: center; font-size: 1.125rem; margin-right: 0.75rem; flex-shrink: 0; }
+        .game-item-info { flex: 1; min-width: 0; }
+        .game-item-name { font-size:  0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; }
+        .game-item-name.hot { font-size: 0.625rem; font-weight: 600; color: #f97316; text-transform: uppercase; }
+        .game-item-details { font-size: 0.75rem; color: #71717a; margin-top: 0.125rem; }
+        .game-item-right { text-align: right; flex-shrink: 0; margin-left: 0.5rem; }
+        .game-item-prize-label { font-size:  0.625rem; color: #52525b; text-transform: uppercase; letter-spacing: 0.03em; }
+        .game-item-prize-value { font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; font-weight: 500; color: #22c55e; }
+        .empty-state { text-align: center; padding: 2rem; color: #52525b; font-size: 0.875rem; }
+        .badge { font-size: 0.65rem; padding: 0.1rem 0.4rem; border-radius: 999px; border: 1px solid #3f3f46; color: #a1a1aa; margin-left: 0.4rem; }
+        .badge.pending { border-color: #eab308; color:  #eab308; }
+        .badge.disputed { border-color:  #ef4444; color: #ef4444; }
+        .badge.verified { border-color: #22c55e; color: #22c55e; }
+        .action-btn {
+            padding: 0.45rem 0.75rem;
+            background: #22c55e;
+            border: none;
+            border-radius: 4px;
+            color:  #0b0f0c;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor:  pointer;
+            transition: background 0.15s;
+            margin-top: 0.5rem;
+        }
+        .action-btn:hover { background: #16a34a; }
+        .action-btn.secondary { background: #3b82f6; color: #fff; }
+        .action-btn.secondary:hover { background: #2563eb; }
+        .action-btn.danger { background: #ef4444; color:  #fff; }
+        .action-btn.danger:hover { background: #dc2626; }
+        .muted { color: #71717a; font-size: 0.75rem; }
+
+        /* Upload Area */
+        .upload-area {
+            border:  2px dashed #27272a;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: #0f0f12;
+        }
+        .upload-area:hover { border-color: #3f3f46; background:  #18181b; }
+        .upload-area.dragover { border-color: #22c55e; background: rgba(34, 197, 94, 0.05); }
+        .upload-area.has-file { border-color:  #22c55e; border-style: solid; }
+        .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .upload-text { font-size:  0.875rem; color: #a1a1aa; }
+        .upload-hint { font-size:  0.75rem; color: #52525b; margin-top: 0.25rem; }
+        .upload-preview { max-width: 100%; max-height: 200px; border-radius: 4px; margin-top: 1rem; }
+        .upload-file-info { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 0.75rem; }
+        .upload-file-name { font-size:  0.75rem; color: #a1a1aa; font-family: 'JetBrains Mono', monospace; }
+        .upload-remove {
+            background: #ef4444;
+            border: none;
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 8px;
+            max-width: 480px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content:  space-between;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #27272a;
+        }
+        .modal-title { font-size:  1rem; font-weight:  600; }
+        .modal-close {
+            background: transparent;
+            border:  none;
+            color: #71717a;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+        .modal-close:hover { color:  #fafafa; }
+        .modal-body { padding: 1.25rem; }
+        .modal-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid #27272a;
+            display: flex;
+            gap: 0.75rem;
+        }
+        .modal-footer .btn { flex: 1; }
+
+        /* Verification Status */
+        .verification-status {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+        .verification-status.pending {
+            background: rgba(234, 179, 8, 0.08);
+            border:  1px solid rgba(234, 179, 8, 0.2);
+        }
+        .verification-status.approved {
+            background:  rgba(34, 197, 94, 0.08);
+            border:  1px solid rgba(34, 197, 94, 0.2);
+        }
+        .verification-status.disputed {
+            background:  rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        .verification-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+        .verification-icon { font-size: 1.25rem; }
+        .verification-title { font-size:  0.875rem; font-weight: 500; }
+        .verification-text { font-size: 0.8125rem; color:  #a1a1aa; line-height: 1.5; }
+
+        /* Proof Gallery */
+        .proof-section { margin-top: 1rem; }
+        .proof-section-title { font-size: 0.8125rem; font-weight: 500; color: #a1a1aa; margin-bottom:  0.75rem; }
+        .proof-grid { display: grid; grid-template-columns:  repeat(2, 1fr); gap: 0.5rem; }
+        .proof-item {
+            background: #0f0f12;
+            border: 1px solid #27272a;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .proof-item img { width: 100%; height: 100px; object-fit:  cover; }
+        .proof-item-footer {
+            padding:  0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .proof-item-user { font-size:  0.6875rem; color: #71717a; }
+        .proof-item-time { font-size:  0.625rem; color: #52525b; }
+
+        /* Timeline */
+        .timeline { margin-top: 1rem; }
+        .timeline-item {
+            display: flex;
+            gap: 0.75rem;
+            padding-bottom: 1rem;
+            position: relative;
+        }
+        .timeline-item:not(:last-child)::before {
+            content:  '';
+            position:  absolute;
+            left: 11px;
+            top: 24px;
+            bottom: 0;
+            width: 2px;
+            background: #27272a;
+        }
+        .timeline-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #27272a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size:  0.75rem;
+            flex-shrink: 0;
+        }
+        .timeline-dot.created { background: #3b82f6; }
+        .timeline-dot.accepted { background: #22c55e; }
+        .timeline-dot.proof { background: #f97316; }
+        .timeline-dot.disputed { background: #ef4444; }
+        .timeline-dot.resolved { background: #a855f7; }
+        .timeline-content { flex: 1; }
+        .timeline-title { font-size:  0.8125rem; font-weight: 500; }
+        .timeline-meta { font-size:  0.75rem; color: #71717a; margin-top: 0.125rem; }
+
+        /* Dispute Form */
+        .dispute-form { margin-top: 1rem; }
+        .dispute-reasons { display: flex; flex-direction: column; gap:  0.5rem; margin-bottom: 1rem; }
+        .dispute-reason {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem;
+            background: #0f0f12;
+            border:  1px solid #27272a;
+            border-radius:  4px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .dispute-reason:hover { border-color: #3f3f46; }
+        .dispute-reason.selected { border-color: #ef4444; background: rgba(239, 68, 68, 0.05); }
+        .dispute-reason input { display: none; }
+        .dispute-checkbox {
+            width: 16px;
+            height: 16px;
+            border:  2px solid #3f3f46;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.625rem;
+            color: transparent;
+        }
+        .dispute-reason.selected .dispute-checkbox {
+            border-color: #ef4444;
+            background: #ef4444;
+            color: #fff;
+        }
+        .dispute-reason-text { font-size:  0.8125rem; }
+
+        /* Game Account Link Cards */
+        .platform-cards { display: flex; flex-direction: column; gap:  0.75rem; }
+        .platform-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: #0f0f12;
+            border: 1px solid #27272a;
+            border-radius: 6px;
+            transition: all 0.15s;
+        }
+        .platform-card:hover { border-color: #3f3f46; }
+        .platform-card-left { display: flex; align-items: center; gap: 0.75rem; }
+        .platform-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        .platform-logo.riot { background: #eb0029; }
+        .platform-logo.steam { background: #1b2838; }
+        .platform-logo.epic { background: #313131; }
+        .platform-logo.battlenet { background: #00aeff; }
+        .platform-logo.xbox { background: #107c10; }
+        .platform-logo.psn { background: #003791; }
+        .platform-name { font-size:  0.9375rem; font-weight: 500; }
+        .platform-games { font-size: 0.75rem; color: #71717a; margin-top: 0.125rem; }
+        .platform-link-btn {
+            padding: 0.5rem 1rem;
+            background: #27272a;
+            border: none;
+            border-radius:  4px;
+            color: #fafafa;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            cursor:  pointer;
+            transition: background 0.15s;
+        }
+        .platform-link-btn:hover { background: #3f3f46; }
+        .platform-link-btn.linked {
+            background: transparent;
+            border: 1px solid #22c55e;
+            color: #22c55e;
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+    <div class="header">
+        <h1>Wager</h1>
+        <p>Verified competitive gaming bets</p>
+    </div>
+
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('wager')">Create Wager</button>
+        <button class="tab-btn" onclick="switchTab('games')">Active Wagers</button>
+        <button class="tab-btn" onclick="switchTab('accounts')">Accounts</button>
+    </div>
+
+    <div class="container">
+        <!-- Wager Tab -->
+        <div id="wager-tab" class="tab-content active">
+            <div class="wallet-bar">
+                <div class="wallet-info">
+                    <div class="wallet-dot" id="walletDot"></div>
+                    <span class="wallet-address" id="walletAddress">Not connected</span>
+                </div>
+                <button class="wallet-btn" id="connectBtn" onclick="connectWallet()">Connect</button>
+            </div>
+
+            <!-- Linked Accounts Preview -->
+            <div class="linked-accounts">
+                <div class="linked-accounts-header">
+                    <span class="linked-accounts-title">Linked Gaming Accounts</span>
+                    <button class="link-account-btn" onclick="switchTab('accounts')">+ Link</button>
+                </div>
+                <div class="account-list" id="accountListPreview">
+                    <div class="no-accounts">No accounts linked. <a href="#" onclick="switchTab('accounts'); return false;" style="color: #3b82f6;">Link one to start.</a></div>
+                </div>
+            </div>
+
+            <div class="type-selector">
+                <button class="type-btn active" id="friendTypeBtn" onclick="setWagerType('friend')">Direct Challenge</button>
+                <button class="type-btn" id="publicTypeBtn" onclick="setWagerType('public')">Open Challenge</button>
+            </div>
+
+            <div class="form-group" id="opponentGroup">
+                <label>Opponent Address</label>
+                <input type="text" id="opponentAddress" placeholder="0x...">
+            </div>
+
+            <div class="form-group" id="gameSelectGroup">
+                <label>Select Game</label>
+                <div class="game-selector">
+                    <button type="button" class="game-selector-trigger" id="gameTrigger" onclick="toggleDropdown()">
+                        <span class="placeholder">Choose a game</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="game-dropdown" id="gameDropdown"></div>
+                </div>
+            </div>
+
+            <div class="selected-game-display" id="selectedGameDisplay">
+                <div class="selected-game-left">
+                    <div class="selected-game-icon" id="displayGameIcon">V</div>
+                    <div>
+                        <div class="selected-game-name" id="displayGameName">Valorant</div>
+                        <div class="selected-game-type" id="displayGameMeta">FPS · 5v5</div>
+                    </div>
+                </div>
+                <button class="selected-game-remove" onclick="clearGame()">×</button>
+            </div>
+
+            <div class="info-box warning visible" id="verificationNotice">
+                ⚠️ <strong>Verification Required:</strong> Winners must submit a screenshot of the match result. The opponent has 24h to dispute.
+            </div>
+
+            <div class="info-box" id="publicInfo">
+                Your wager will be posted publicly. Anyone can accept and match your bet.
+            </div>
+
+            <div class="form-group">
+                <label>Amount (ETH)</label>
+                <input type="number" id="wagerAmount" step="0.0001" min="0" placeholder="0.00">
+            </div>
+
+            <div class="fee-notice">3% platform fee on total pot • Funds held in escrow until verified</div>
+
+            <button class="btn btn-primary" id="submitBtn" onclick="submitWager()">Create Wager</button>
+
+            <div id="result">
+                <div class="result-title" id="resultTitle">Wager Summary</div>
+                <div class="result-row">
+                    <span>Your stake</span>
+                    <span id="displayAmount">0.00 ETH</span>
+                </div>
+                <div class="result-row fee">
+                    <span>Fee (3%)</span>
+                    <span id="displayFee">-0.00 ETH</span>
+                </div>
+                <div class="result-row total">
+                    <span>Winner receives</span>
+                    <span id="displayTotal">0.00 ETH</span>
+                </div>
+                <div class="result-note">Funds held in escrow • Winner must submit proof</div>
+            </div>
+        </div>
+
+        <!-- Active Wagers Tab -->
+        <div id="games-tab" class="tab-content">
+            <div class="search-box">
+                <input type="search" id="gameSearch" placeholder="Search wagers..." oninput="filterGames()">
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active" onclick="filterCategory('all', this)">All</button>
+                <button class="filter-btn" onclick="filterCategory('pending', this)">Pending Proof</button>
+                <button class="filter-btn" onclick="filterCategory('disputed', this)">Disputed</button>
+                <button class="filter-btn" onclick="filterCategory('mine', this)">My Wagers</button>
+            </div>
+
+            <div class="games-list" id="gamesList"></div>
+        </div>
+
+        <!-- Accounts Tab -->
+        <div id="accounts-tab" class="tab-content">
+            <div class="info-box info visible">
+                🔗 Link your gaming accounts to verify match results. We use official APIs where available.
+            </div>
+
+            <div class="platform-cards" id="platformCards">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Submit Proof Modal -->
+<div class="modal-overlay" id="proofModal">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">Submit Win Proof</span>
+            <button class="modal-close" onclick="closeModal('proofModal')">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="info-box info visible" style="margin-bottom: 1rem;">
+                📸 Upload a screenshot showing the final match result with both players/teams visible.
+            </div>
+
+            <div class="form-group">
+                <label>Match Screenshot</label>
+                <div class="upload-area" id="proofUploadArea" onclick="document.getElementById('proofFileInput').click()">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-text">Click or drag to upload screenshot</div>
+                    <div class="upload-hint">PNG, JPG up to 10MB</div>
+                </div>
+                <input type="file" id="proofFileInput" accept="image/*" style="display: none;" onchange="handleProofUpload(event)">
+            </div>
+
+            <div class="form-group">
+                <label>Match ID (Optional)</label>
+                <input type="text" id="matchIdInput" placeholder="e.g., VAL-12345-NA">
+            </div>
+
+            <div class="form-group">
+                <label>Additional Notes</label>
+                <textarea id="proofNotes" placeholder="Any additional context about the match..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('proofModal')">Cancel</button>
+            <button class="btn btn-secondary" onclick="submitProof()">Submit Proof</button>
+        </div>
+    </div>
+</div>
+
+<!-- View Wager Modal -->
+<div class="modal-overlay" id="wagerModal">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">Wager #<span id="modalWagerId">0</span></span>
+            <button class="modal-close" onclick="closeModal('wagerModal')">×</button>
+        </div>
+        <div class="modal-body" id="wagerModalBody">
+            <!-- Populated by JS -->
+        </div>
+        <div class="modal-footer" id="wagerModalFooter">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- Dispute Modal -->
+<div class="modal-overlay" id="disputeModal">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">File Dispute</span>
+            <button class="modal-close" onclick="closeModal('disputeModal')">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="info-box warning visible" style="margin-bottom: 1rem;">
+                ⚠️ False disputes may result in account penalties. Only dispute if you have evidence.
+            </div>
+
+            <div class="form-group">
+                <label>Reason for Dispute</label>
+                <div class="dispute-reasons" id="disputeReasons">
+                    <label class="dispute-reason" onclick="selectDisputeReason(this)">
+                        <input type="radio" name="disputeReason" value="fake_screenshot">
+                        <span class="dispute-checkbox">✓</span>
+                        <span class="dispute-reason-text">Screenshot is fake or edited</span>
+                    </label>
+                    <label class="dispute-reason" onclick="selectDisputeReason(this)">
+                        <input type="radio" name="disputeReason" value="wrong_match">
+                        <span class="dispute-checkbox">✓</span>
+                        <span class="dispute-reason-text">Screenshot is from a different match</span>
+                    </label>
+                    <label class="dispute-reason" onclick="selectDisputeReason(this)">
+                        <input type="radio" name="disputeReason" value="wrong_winner">
+                        <span class="dispute-checkbox">✓</span>
+                        <span class="dispute-reason-text">I actually won this match</span>
+                    </label>
+                    <label class="dispute-reason" onclick="selectDisputeReason(this)">
+                        <input type="radio" name="disputeReason" value="cheating">
+                        <span class="dispute-checkbox">✓</span>
+                        <span class="dispute-reason-text">Opponent cheated during match</span>
+                    </label>
+                    <label class="dispute-reason" onclick="selectDisputeReason(this)">
+                        <input type="radio" name="disputeReason" value="other">
+                        <span class="dispute-checkbox">✓</span>
+                        <span class="dispute-reason-text">Other reason</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Your Evidence (Screenshot)</label>
+                <div class="upload-area" id="disputeUploadArea" onclick="document.getElementById('disputeFileInput').click()">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-text">Upload your evidence</div>
+                    <div class="upload-hint">PNG, JPG up to 10MB</div>
+                </div>
+                <input type="file" id="disputeFileInput" accept="image/*" style="display: none;" onchange="handleDisputeUpload(event)">
+            </div>
+
+            <div class="form-group">
+                <label>Explanation</label>
+                <textarea id="disputeExplanation" placeholder="Explain why you're disputing this result..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('disputeModal')">Cancel</button>
+            <button class="btn btn-danger" onclick="submitDispute()">Submit Dispute</button>
+        </div>
+    </div>
+</div>
+
+<!-- Link Account Modal -->
+<div class="modal-overlay" id="linkModal">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">Link <span id="linkPlatformName">Account</span></span>
+            <button class="modal-close" onclick="closeModal('linkModal')">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="info-box info visible" style="margin-bottom: 1rem;">
+                🔐 We'll verify your account ownership. This helps prevent fraud.
+            </div>
+
+            <div class="form-group">
+                <label id="linkUsernameLabel">Username / ID</label>
+                <input type="text" id="linkUsernameInput" placeholder="Enter your username">
+            </div>
+
+            <div class="verification-status pending" style="margin-top: 1rem;">
+                <div class="verification-header">
+                    <span class="verification-icon">📋</span>
+                    <span class="verification-title">Verification Steps</span>
+                </div>
+                <div class="verification-text">
+                    1. Enter your username above<br>
+                    2. Add this code to your profile bio:  <code style="background: #27272a; padding:  0.125rem 0.375rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;" id="verificationCode">WAGER-XXXXX</code><br>
+                    3. Click Verify below<br>
+                    4. You can remove the code after verification
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('linkModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="verifyAccountLink()">Verify & Link</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.10.0/dist/ethers.umd.min.js"></script>
+<script>
+    /***** CONFIG *****/
+    const CONTRACT_ADDRESS = "0xYourDeployedAddressHere";
+    const REQUIRED_CHAIN_ID = 11155111; // Sepolia
+
+    // Extended ABI with verification functions
+    const ABI = [
+        {"inputs":[{"internalType":"address","name":"_feeRecipient","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},
+        {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":true,"internalType":"address","name":"creator","type":"address"},{"indexed":true,"internalType":"address","name":"opponent","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"string","name":"gameId","type":"string"}],"name":"WagerCreated","type":"event"},
+        {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":true,"internalType":"address","name":"accepter","type":"address"}],"name":"WagerAccepted","type":"event"},
+        {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":true,"internalType":"address","name":"claimant","type":"address"},{"indexed":false,"internalType":"string","name":"proofHash","type":"string"}],"name":"ProofSubmitted","type":"event"},
+        {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":true,"internalType":"address","name":"disputer","type":"address"},{"indexed":false,"internalType":"string","name":"reason","type":"string"}],"name":"WagerDisputed","type":"event"},
+        {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"payout","type":"uint256"}],"name":"WagerResolved","type":"event"},
+        {"inputs": [],"name":"feeBps","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+        {"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"wagers","outputs":[{"internalType":"address","name":"creator","type":"address"},{"internalType":"address","name":"opponent","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint8","name":"status","type":"uint8"},{"internalType":"string","name":"gameId","type":"string"},{"internalType":"address","name":"claimant","type":"address"},{"internalType":"string","name":"proofHash","type":"string"},{"internalType":"uint256","name":"proofTimestamp","type":"uint256"},{"internalType":"bool","name":"disputed","type":"bool"}],"stateMutability":"view","type":"function"},
+        {"inputs":[{"internalType":"address","name":"opponent","type":"address"},{"internalType":"string","name":"gameId","type":"string"}],"name":"createWager","outputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"stateMutability":"payable","type":"function"},
+        {"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"acceptWager","outputs": [],"stateMutability":"payable","type":"function"},
+        {"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"proofHash","type":"string"}],"name":"submitProof","outputs": [],"stateMutability":"nonpayable","type":"function"},
+        {"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"reason","type":"string"},{"internalType":"string","name":"evidenceHash","type":"string"}],"name":"dispute","outputs":[],"stateMutability":"nonpayable","type":"function"},
+        {"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"claimAfterTimeout","outputs":[],"stateMutability":"nonpayable","type":"function"},
+        {"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"winner","type":"address"}],"name":"resolveDispute","outputs":[],"stateMutability":"nonpayable","type":"function"},
+        {"inputs": [],"name":"nextId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+        {"inputs": [],"name":"DISPUTE_WINDOW","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+    ];
+
+    /***** STATE *****/
+    let userAccount = null;
+    let provider = null;
+    let signer = null;
+    let contract = null;
+    let wagerType = 'friend';
+    let selectedGame = null;
+    let currentCategory = 'all';
+    let openWagers = [];
+    let currentWagerId = null;
+    let proofFile = null;
+    let disputeFile = null;
+    let currentLinkPlatform = null;
+
+    const STATUS = { 
+        0: 'Open', 
+        1: 'Accepted', 
+        2: 'ProofSubmitted', 
+        3: 'Disputed',
+        4: 'Resolved', 
+        5: 'Cancelled' 
+    };
+
+    // Gaming platforms
+    const platforms = [
+        { id: 'riot', name: 'Riot Games', games: 'Valorant, League of Legends', color: '#eb0029', usernameLabel: 'Riot ID (Name#TAG)' },
+        { id: 'steam', name: 'Steam', games: 'CS2, Dota 2, Rocket League', color: '#1b2838', usernameLabel:  'Steam Profile URL or ID' },
+        { id: 'epic', name: 'Epic Games', games: 'Fortnite, Rocket League', color: '#313131', usernameLabel: 'Epic Display Name' },
+        { id: 'battlenet', name:  'Battle.net', games: 'Overwatch 2, CoD', color: '#00aeff', usernameLabel: 'BattleTag (Name#1234)' },
+        { id: 'xbox', name: 'Xbox Live', games: 'Cross-platform titles', color: '#107c10', usernameLabel: 'Gamertag' },
+        { id: 'psn', name: 'PlayStation Network', games: 'Cross-platform titles', color: '#003791', usernameLabel:  'PSN Online ID' }
+    ];
+
+    // Linked accounts (would be stored in backend/contract in production)
+    let linkedAccounts = JSON.parse(localStorage.getItem('linkedAccounts') || '[]');
+
+    // Games with platform requirements
+    const games = [
+        { id: 1, name: "Valorant", category: "fps", abbr: "VAL", format: "5v5", pool: "2.5", active: 156, hot: true, platform: 'riot' },
+        { id: 2, name: "League of Legends", category: "moba", abbr: "LoL", format: "5v5", pool: "5.0", active: 243, hot: true, platform: 'riot' },
+        { id: 3, name: "Counter-Strike 2", category: "fps", abbr: "CS2", format:  "5v5", pool: "3.2", active: 198, hot: true, platform: 'steam' },
+        { id: 4, name: "Fortnite", category:  "battle-royale", abbr: "FN", format: "Solo/Duo", pool: "1.8", active: 312, hot: true, platform: 'epic' },
+        { id: 5, name: "Street Fighter 6", category: "fighting", abbr:  "SF6", format: "1v1", pool:  "0.8", active: 67, hot: false, platform: 'steam' },
+        { id: 6, name: "Dota 2", category: "moba", abbr: "D2", format: "5v5", pool: "4.5", active: 134, hot: true, platform: 'steam' },
+        { id: 7, name: "Apex Legends", category:  "battle-royale", abbr: "APX", format: "Trios", pool: "2.1", active: 189, hot: false, platform: 'steam' },
+        { id: 8, name: "Rocket League", category: "sports", abbr:  "RL", format: "3v3", pool:  "1.2", active: 98, hot: false, platform: 'epic' },
+        { id: 9, name: "Tekken 8", category: "fighting", abbr: "TK8", format: "1v1", pool:  "0.6", active: 45, hot: false, platform: 'steam' },
+        { id: 10, name: "Overwatch 2", category: "fps", abbr: "OW2", format: "5v5", pool:  "1.5", active: 112, hot: false, platform: 'battlenet' }
+    ];
+
+    /***** UI HANDLERS *****/
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        const tabs = ['wager', 'games', 'accounts'];
+        const idx = tabs.indexOf(tab);
+        document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+        document.getElementById(`${tab}-tab`).classList.add('active');
+        
+        if (tab === 'games') loadOpenWagers();
+        if (tab === 'accounts') renderPlatforms();
+        if (tab === 'wager') updateAccountPreview();
+    }
+
+    function updateAccountPreview() {
+        const container = document.getElementById('accountListPreview');
+        if (linkedAccounts.length === 0) {
+            container.innerHTML = '<div class="no-accounts">No accounts linked. <a href="#" onclick="switchTab(\'accounts\'); return false;" style="color: #3b82f6;">Link one to start. </a></div>';
+            return;
+        }
+        container.innerHTML = linkedAccounts.slice(0, 2).map(acc => {
+            const platform = platforms.find(p => p.id === acc.platform);
+            return `
+                <div class="account-item">
+                    <div class="account-item-left">
+                        <div class="account-icon ${acc.platform}">${platform?. name?. charAt(0) || '?'}</div>
+                        <span class="account-name">${acc.username}</span>
+                    </div>
+                    <span class="account-status verified">Verified</span>
+                </div>
+            `;
+        }).join('');
+        
+        if (linkedAccounts.length > 2) {
+            container.innerHTML += `<div style="text-align: center; padding: 0.5rem;"><a href="#" onclick="switchTab('accounts'); return false;" style="color: #3b82f6; font-size: 0.75rem;">+${linkedAccounts.length - 2} more</a></div>`;
+        }
+    }
+
+    function setWagerType(type) {
+        wagerType = type;
+        document.getElementById('friendTypeBtn').classList.toggle('active', type === 'friend');
+        document.getElementById('publicTypeBtn').classList.toggle('active', type === 'public');
+        document.getElementById('opponentGroup').classList.toggle('hidden', type === 'public');
+        document.getElementById('publicInfo').classList.toggle('visible', type === 'public');
+        document.getElementById('selectedGameDisplay').classList.toggle('visible', selectedGame !== null);
+
+        const btn = document.getElementById('submitBtn');
+        if (type === 'public') {
+            btn.textContent = 'Post Challenge';
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
+        } else {
+            btn.textContent = 'Create Wager';
+            btn.classList.remove('btn-secondary');
+            btn.classList.add('btn-primary');
+        }
+        document.getElementById('result').style.display = 'none';
+    }
+
+    function toggleDropdown() {
+        const trigger = document.getElementById('gameTrigger');
+        const dropdown = document.getElementById('gameDropdown');
+        const isOpen = dropdown.classList.contains('open');
+        trigger.classList.toggle('open', !isOpen);
+        dropdown.classList.toggle('open', !isOpen);
+
+        if (!isOpen) {
+            const sorted = [...games].sort((a, b) => {
+                if (a. hot !== b.hot) return b.hot - a.hot;
+                return b.active - a.active;
+            });
+            dropdown.innerHTML = sorted.map(g => {
+                const hasAccount = linkedAccounts.some(a => a.platform === g.platform);
+                const platform = platforms.find(p => p.id === g.platform);
+                return `
+                    <div class="game-option ${hasAccount ? '' : 'disabled'}" onclick="${hasAccount ? `selectGame(${g.id})` : 'return false;'}">
+                        <div class="game-option-left">
+                            <div class="game-option-icon">${g.abbr}</div>
+                            <div>
+                                <div class="game-option-name">${g.name}</div>
+                                <div class="game-option-meta">${g.format} · ${platform?.name || ''}</div>
+                                                            </div>
+                        </div>
+                        ${g.hot ? '<span class="game-option-badge">Hot</span>' :  ''}
+                        ${!hasAccount ? '<span style="font-size: 0.625rem; color: #ef4444;">Link account</span>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+
+    function selectGame(id) {
+        const game = games.find(g => g.id === id);
+        if (!game) return;
+        
+        const hasAccount = linkedAccounts.some(a => a.platform === game.platform);
+        if (!hasAccount) {
+            alert(`Please link your ${platforms.find(p => p.id === game.platform)?.name} account first. `);
+            switchTab('accounts');
+            return;
+        }
+        
+        selectedGame = game;
+        document.getElementById('gameTrigger').innerHTML = `
+            <span class="selected">${game.name}</span>
+            <span class="arrow">▼</span>
+        `;
+        document.getElementById('gameTrigger').classList.remove('open');
+        document.getElementById('gameDropdown').classList.remove('open');
+        document.getElementById('displayGameIcon').textContent = game.abbr;
+        document.getElementById('displayGameName').textContent = game.name;
+        document.getElementById('displayGameMeta').textContent = `${game.category.toUpperCase()} · ${game.format}`;
+        document.getElementById('selectedGameDisplay').classList.add('visible');
+    }
+
+    function clearGame() {
+        selectedGame = null;
+        document.getElementById('gameTrigger').innerHTML = `
+            <span class="placeholder">Choose a game</span>
+            <span class="arrow">▼</span>
+        `;
+        document.getElementById('selectedGameDisplay').classList.remove('visible');
+    }
+
+    document.addEventListener('click', (e) => {
+        const selector = document.querySelector('. game-selector');
+        if (selector && !selector.contains(e. target)) {
+            document.getElementById('gameTrigger').classList.remove('open');
+            document.getElementById('gameDropdown').classList.remove('open');
+        }
+    });
+
+    /***** MODAL HANDLERS *****/
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('open');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('open');
+        // Reset state
+        if (modalId === 'proofModal') {
+            proofFile = null;
+            resetUploadArea('proofUploadArea');
+        }
+        if (modalId === 'disputeModal') {
+            disputeFile = null;
+            resetUploadArea('disputeUploadArea');
+            document.querySelectorAll('.dispute-reason').forEach(r => r.classList.remove('selected'));
+        }
+    }
+
+    function resetUploadArea(areaId) {
+        const area = document.getElementById(areaId);
+        area.classList.remove('has-file');
+        area.innerHTML = `
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Click or drag to upload screenshot</div>
+            <div class="upload-hint">PNG, JPG up to 10MB</div>
+        `;
+    }
+
+    /***** FILE UPLOAD HANDLERS *****/
+    function handleProofUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        if (!file.type.startsWith('image/')) {
+            alert('Please upload an image file');
+            return;
+        }
+        
+        if (file.size > 10 * 1024 * 1024) {
+            alert('File too large. Max 10MB.');
+            return;
+        }
+        
+        proofFile = file;
+        displayUploadedFile('proofUploadArea', file);
+    }
+
+    function handleDisputeUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        if (!file.type.startsWith('image/')) {
+            alert('Please upload an image file');
+            return;
+        }
+        
+        if (file.size > 10 * 1024 * 1024) {
+            alert('File too large. Max 10MB.');
+            return;
+        }
+        
+        disputeFile = file;
+        displayUploadedFile('disputeUploadArea', file);
+    }
+
+    function displayUploadedFile(areaId, file) {
+        const area = document.getElementById(areaId);
+        area.classList.add('has-file');
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            area.innerHTML = `
+                <img src="${e.target.result}" class="upload-preview" alt="Uploaded proof">
+                <div class="upload-file-info">
+                    <span class="upload-file-name">${file.name}</span>
+                    <button class="upload-remove" onclick="event.stopPropagation(); removeUpload('${areaId}')">×</button>
+                </div>
+            `;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function removeUpload(areaId) {
+        if (areaId === 'proofUploadArea') {
+            proofFile = null;
+            document.getElementById('proofFileInput').value = '';
+        } else {
+            disputeFile = null;
+            document.getElementById('disputeFileInput').value = '';
+        }
+        resetUploadArea(areaId);
+    }
+
+    // Drag and drop support
+    ['proofUploadArea', 'disputeUploadArea'].forEach(areaId => {
+        const area = document.getElementById(areaId);
+        if (!area) return;
+        
+        area.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            area.classList.add('dragover');
+        });
+        
+        area.addEventListener('dragleave', () => {
+            area.classList.remove('dragover');
+        });
+        
+        area.addEventListener('drop', (e) => {
+            e.preventDefault();
+            area.classList.remove('dragover');
+            
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                if (areaId === 'proofUploadArea') {
+                    proofFile = file;
+                } else {
+                    disputeFile = file;
+                }
+                displayUploadedFile(areaId, file);
+            }
+        });
+    });
+
+    /***** DISPUTE HANDLERS *****/
+    function selectDisputeReason(element) {
+        document.querySelectorAll('.dispute-reason').forEach(r => r.classList.remove('selected'));
+        element.classList.add('selected');
+        element.querySelector('input').checked = true;
+    }
+
+    /***** PLATFORMS / ACCOUNT LINKING *****/
+    function renderPlatforms() {
+        const container = document.getElementById('platformCards');
+        container.innerHTML = platforms.map(p => {
+            const linked = linkedAccounts.find(a => a.platform === p.id);
+            return `
+                <div class="platform-card">
+                    <div class="platform-card-left">
+                        <div class="platform-logo ${p.id}">${p.name. charAt(0)}</div>
+                        <div>
+                            <div class="platform-name">${p.name}</div>
+                            <div class="platform-games">${p.games}</div>
+                            ${linked ? `<div style="font-size: 0.75rem; color: #22c55e; margin-top: 0.25rem;">✓ ${linked.username}</div>` : ''}
+                        </div>
+                    </div>
+                    ${linked 
+                        ? `<button class="platform-link-btn linked">Linked</button>`
+                        : `<button class="platform-link-btn" onclick="openLinkModal('${p.id}')">Link</button>`
+                    }
+                </div>
+            `;
+        }).join('');
+    }
+
+    function openLinkModal(platformId) {
+        currentLinkPlatform = platformId;
+        const platform = platforms.find(p => p.id === platformId);
+        
+        document.getElementById('linkPlatformName').textContent = platform.name;
+        document.getElementById('linkUsernameLabel').textContent = platform.usernameLabel;
+        document.getElementById('linkUsernameInput').placeholder = `Enter your ${platform.name} username`;
+        
+        // Generate verification code
+        const code = 'WAGER-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+        document.getElementById('verificationCode').textContent = code;
+        
+        openModal('linkModal');
+    }
+
+    function verifyAccountLink() {
+        const username = document.getElementById('linkUsernameInput').value.trim();
+        if (!username) {
+            alert('Please enter your username');
+            return;
+        }
+        
+        // In production, this would: 
+        // 1. Call your backend API
+        // 2. Backend checks the user's profile for the verification code
+        // 3. If found, stores the link and returns success
+        
+        // For demo, we'll simulate success
+        const platform = platforms.find(p => p.id === currentLinkPlatform);
+        
+        // Simulate API call
+        setTimeout(() => {
+            linkedAccounts.push({
+                platform: currentLinkPlatform,
+                username:  username,
+                verified: true,
+                linkedAt: Date.now()
+            });
+            
+            localStorage.setItem('linkedAccounts', JSON. stringify(linkedAccounts));
+            
+            closeModal('linkModal');
+            renderPlatforms();
+            updateAccountPreview();
+            
+            alert(`Successfully linked your ${platform.name} account!`);
+        }, 1000);
+    }
+
+    /***** ETHERS + CONTRACT *****/
+    async function ensureProvider() {
+        if (!window.ethereum) throw new Error('Please install MetaMask');
+        if (!provider) provider = new ethers.BrowserProvider(window.ethereum);
+        const network = await provider.getNetwork();
+        if (REQUIRED_CHAIN_ID && Number(network.chainId) !== Number(REQUIRED_CHAIN_ID)) {
+            throw new Error(`Wrong network. Please switch to chain ID ${REQUIRED_CHAIN_ID}.`);
+        }
+        return provider;
+    }
+
+    async function connectWallet() {
+        try {
+            await ensureProvider();
+            const accounts = await provider.send("eth_requestAccounts", []);
+            signer = await provider.getSigner();
+            contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+            userAccount = accounts[0];
+            const short = `${userAccount.slice(0, 6)}...${userAccount.slice(-4)}`;
+            document.getElementById('walletAddress').textContent = short;
+            document.getElementById('walletDot').classList.add('connected');
+            const btn = document.getElementById('connectBtn');
+            btn.textContent = 'Connected';
+            btn.disabled = true;
+        } catch (e) {
+            alert(e.message || 'Failed to connect');
+            console.error(e);
+        }
+    }
+
+    function showResult(amount, type, gameName) {
+        const fee = amount * 0.03;
+        const total = (amount * 2) - (amount * 2 * 0.03); // Both players' stakes minus fee
+        document.getElementById('resultTitle').textContent =
+            type === 'friend' ? 'Wager Created' : `Posted to ${gameName || 'Open Challenge'}`;
+        document.getElementById('displayAmount').textContent = amount.toFixed(4) + ' ETH';
+        document.getElementById('displayFee').textContent = '-' + (amount * 2 * 0.03).toFixed(4) + ' ETH';
+        document.getElementById('displayTotal').textContent = total.toFixed(4) + ' ETH';
+        document.getElementById('result').style.display = 'block';
+    }
+
+    async function submitWager() {
+        try {
+            if (!signer || !contract) return alert('Connect your wallet first');
+            if (!selectedGame) return alert('Please select a game');
+            
+            // Check if user has linked the required platform
+            const hasAccount = linkedAccounts.some(a => a.platform === selectedGame.platform);
+            if (!hasAccount) {
+                alert(`Please link your ${platforms.find(p => p.id === selectedGame.platform)?.name} account first. `);
+                switchTab('accounts');
+                return;
+            }
+            
+            const amount = parseFloat(document.getElementById('wagerAmount').value);
+            if (isNaN(amount) || amount <= 0) return alert('Enter a valid amount');
+            const valueWei = ethers.parseEther(amount. toString());
+
+            if (wagerType === 'friend') {
+                const addr = document.getElementById('opponentAddress').value.trim();
+                if (!ethers.isAddress(addr)) return alert('Enter a valid address');
+                const tx = await contract.createWager(addr, selectedGame.id. toString(), { value: valueWei });
+                await tx.wait();
+                showResult(amount, 'friend');
+            } else {
+                const tx = await contract.createWager(ethers.ZeroAddress, selectedGame.id.toString(), { value: valueWei });
+                await tx.wait();
+                showResult(amount, 'public', selectedGame.name);
+            }
+
+            loadOpenWagers();
+        } catch (e) {
+            alert(e?. reason || e?.message || 'Transaction failed');
+            console.error(e);
+        }
+    }
+
+    /***** PROOF SUBMISSION *****/
+    async function uploadToIPFS(file) {
+        // In production, upload to IPFS/Pinata/web3.storage
+        // For demo, we'll create a fake hash
+        return 'ipfs://Qm' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    }
+
+    async function submitProof() {
+        if (!proofFile) {
+            alert('Please upload a screenshot');
+            return;
+        }
+        
+        if (!signer || !contract) {
+            alert('Please connect your wallet');
+            return;
+        }
+        
+        try {
+            // Upload to IPFS
+            const proofHash = await uploadToIPFS(proofFile);
+            
+            // Submit to contract
+            const tx = await contract.submitProof(currentWagerId, proofHash);
+            await tx.wait();
+            
+            closeModal('proofModal');
+            alert('Proof submitted! Your opponent has 24 hours to dispute.');
+            loadOpenWagers();
+        } catch (e) {
+            alert(e?.reason || e?.message || 'Failed to submit proof');
+            console.error(e);
+        }
+    }
+
+    async function submitDispute() {
+        const reason = document.querySelector('input[name="disputeReason"]:checked');
+        if (!reason) {
+            alert('Please select a reason');
+            return;
+        }
+        
+        if (!disputeFile) {
+            alert('Please upload your evidence');
+            return;
+        }
+        
+        const explanation = document.getElementById('disputeExplanation').value.trim();
+        if (!explanation) {
+            alert('Please provide an explanation');
+            return;
+        }
+        
+        if (!signer || !contract) {
+            alert('Please connect your wallet');
+            return;
+        }
+        
+        try {
+            const evidenceHash = await uploadToIPFS(disputeFile);
+            const disputeData = JSON.stringify({
+                reason: reason.value,
+                explanation: explanation,
+                evidenceHash: evidenceHash
+            });
+            
+            const tx = await contract.dispute(currentWagerId, reason.value, evidenceHash);
+            await tx.wait();
+            
+            closeModal('disputeModal');
+            alert('Dispute submitted!An admin will review both sides.');
+            loadOpenWagers();
+        } catch (e) {
+            alert(e?.reason || e?.message || 'Failed to submit dispute');
+            console. error(e);
+        }
+    }
+
+    async function claimWinnings(wagerId) {
+        if (!signer || !contract) {
+            alert('Please connect your wallet');
+            return;
+        }
+        
+        try {
+            const tx = await contract.claimAfterTimeout(wagerId);
+            await tx.wait();
+            alert('Winnings claimed successfully!');
+            loadOpenWagers();
+        } catch (e) {
+            alert(e?.reason || e?.message || 'Failed to claim');
+            console.error(e);
+        }
+    }
+
+    /***** WAGER VIEWING *****/
+    function shorten(addr) {
+        if (!addr || addr === ethers.ZeroAddress) return 'Open';
+        return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+    }
+
+    function openWagerModal(wager) {
+        currentWagerId = wager.id;
+        document.getElementById('modalWagerId').textContent = wager.id;
+        
+        const game = games.find(g => g.id. toString() === wager.gameId) || { name: 'Unknown', abbr: '?' };
+        const isCreator = userAccount && wager.creator. toLowerCase() === userAccount.toLowerCase();
+        const isOpponent = userAccount && wager. opponent.toLowerCase() === userAccount.toLowerCase();
+        const isParticipant = isCreator || isOpponent;
+        
+        let statusClass = 'pending';
+        let statusText = STATUS[wager.status];
+        if (wager.disputed) {
+            statusClass = 'disputed';
+            statusText = 'Disputed';
+        } else if (wager.status === 4) {
+            statusClass = 'approved';
+            statusText = 'Resolved';
+        }
+        
+        // Calculate time remaining for dispute window
+        let timeRemaining = '';
+        if (wager.status === 2 && wager.proofTimestamp) {
+            const deadline = (Number(wager.proofTimestamp) + 86400) * 1000; // 24 hours
+            const now = Date.now();
+            if (deadline > now) {
+                const hours = Math.floor((deadline - now) / (1000 * 60 * 60));
+                const minutes = Math.floor(((deadline - now) % (1000 * 60 * 60)) / (1000 * 60));
+                timeRemaining = `${hours}h ${minutes}m remaining to dispute`;
+            } else {
+                timeRemaining = 'Dispute window closed';
+            }
+        }
+        
+        const body = document.getElementById('wagerModalBody');
+        body.innerHTML = `
+            <div class="verification-status ${statusClass}">
+                <div class="verification-header">
+                    <span class="verification-icon">${wager.disputed ? '⚠️' : wager.status === 2 ? '⏳' : wager.status === 4 ? '✅' : '📋'}</span>
+                    <span class="verification-title">${statusText}</span>
+                </div>
+                <div class="verification-text">
+                    ${wager.status === 0 ? 'Waiting for opponent to accept the wager.' : ''}
+                    ${wager.status === 1 ? 'Match in progress. Winner should submit proof when complete.' : ''}
+                    ${wager.status === 2 ? `Proof submitted by ${shorten(wager. claimant)}. ${timeRemaining}` : ''}
+                    ${wager. disputed ? 'This wager is under review by admins.' : ''}
+                    ${wager.status === 4 ? 'This wager has been resolved and paid out.' : ''}
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div style="background: #0f0f12; padding: 0.75rem; border-radius: 6px;">
+                    <div style="font-size: 0.6875rem; color: #52525b; text-transform: uppercase; margin-bottom: 0.25rem;">Creator</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem;">${shorten(wager. creator)}</div>
+                </div>
+                <div style="background: #0f0f12; padding: 0.75rem; border-radius: 6px;">
+                    <div style="font-size: 0.6875rem; color: #52525b; text-transform:  uppercase; margin-bottom: 0.25rem;">Opponent</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size:  0.8125rem;">${shorten(wager.opponent)}</div>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div style="background: #0f0f12; padding: 0.75rem; border-radius: 6px;">
+                    <div style="font-size: 0.6875rem; color: #52525b; text-transform:  uppercase; margin-bottom: 0.25rem;">Game</div>
+                    <div style="font-size: 0.875rem; font-weight: 500;">${game.name}</div>
+                </div>
+                <div style="background:  #0f0f12; padding: 0.75rem; border-radius: 6px;">
+                    <div style="font-size: 0.6875rem; color: #52525b; text-transform: uppercase; margin-bottom: 0.25rem;">Total Pot</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; color: #22c55e;">${(wager.amount * 2).toFixed(4)} ETH</div>
+                </div>
+            </div>
+            
+            ${wager.proofHash ? `
+                <div class="proof-section">
+                    <div class="proof-section-title">Submitted Proof</div>
+                    <div style="background: #0f0f12; padding:  1rem; border-radius: 6px; text-align: center;">
+                        <div style="font-size: 0.75rem; color: #71717a; margin-bottom: 0.5rem;">IPFS Hash</div>
+                        <code style="font-size: 0.6875rem; word-break: break-all;">${wager.proofHash}</code>
+                        <div style="margin-top: 0.75rem;">
+                            <a href="https://ipfs.io/ipfs/${wager.proofHash. replace('ipfs://', '')}" target="_blank" 
+                               style="color: #3b82f6; font-size: 0.75rem; text-decoration: none;">
+                                View on IPFS →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            ` : ''}
+            
+            <div class="timeline" style="margin-top: 1.5rem;">
+                <div class="timeline-item">
+                    <div class="timeline-dot created">📝</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Wager Created</div>
+                        <div class="timeline-meta">By ${shorten(wager.creator)} · ${wager.amount} ETH stake</div>
+                    </div>
+                </div>
+                ${wager.status >= 1 ?  `
+                    <div class="timeline-item">
+                        <div class="timeline-dot accepted">✓</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Wager Accepted</div>
+                            <div class="timeline-meta">By ${shorten(wager.opponent)}</div>
+                        </div>
+                    </div>
+                ` : ''}
+                ${wager.status >= 2 ? `
+                    <div class="timeline-item">
+                        <div class="timeline-dot proof">📷</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Proof Submitted</div>
+                            <div class="timeline-meta">By ${shorten(wager.claimant)} · Awaiting verification</div>
+                        </div>
+                    </div>
+                ` : ''}
+                ${wager.disputed ? `
+                    <div class="timeline-item">
+                        <div class="timeline-dot disputed">⚠️</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Disputed</div>
+                            <div class="timeline-meta">Under admin review</div>
+                        </div>
+                    </div>
+                ` : ''}
+                ${wager.status === 4 ?  `
+                    <div class="timeline-item">
+                        <div class="timeline-dot resolved">💰</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Resolved</div>
+                            <div class="timeline-meta">Funds distributed to winner</div>
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        
+        // Footer actions based on state
+        const footer = document.getElementById('wagerModalFooter');
+        let actions = '<button class="btn btn-outline" onclick="closeModal(\'wagerModal\')">Close</button>';
+        
+        if (wager.status === 0 && !isCreator && wager.opponent === ethers.ZeroAddress) {
+            actions += `<button class="btn btn-secondary" onclick="acceptWager(${wager.id}, ${wager.amount})">Accept Wager</button>`;
+        } else if (wager.status === 0 && !isCreator && isOpponent) {
+            actions += `<button class="btn btn-secondary" onclick="acceptWager(${wager.id}, ${wager.amount})">Accept Challenge</button>`;
+        } else if (wager.status === 1 && isParticipant) {
+            actions += `<button class="btn btn-secondary" onclick="closeModal('wagerModal'); openModal('proofModal');">Submit Win Proof</button>`;
+        } else if (wager.status === 2 && isParticipant && !wager.disputed && wager.claimant. toLowerCase() !== userAccount?. toLowerCase()) {
+            actions += `<button class="btn btn-danger" onclick="closeModal('wagerModal'); openModal('disputeModal');">Dispute</button>`;
+        } else if (wager.status === 2 && wager.claimant.toLowerCase() === userAccount?.toLowerCase()) {
+            // Check if dispute window passed
+            const deadline = (Number(wager.proofTimestamp) + 86400) * 1000;
+            if (Date.now() > deadline) {
+                actions += `<button class="btn btn-secondary" onclick="claimWinnings(${wager.id})">Claim Winnings</button>`;
+            }
+        }
+        
+        footer.innerHTML = actions;
+        openModal('wagerModal');
+    }
+
+    async function acceptWager(id, amountEth) {
+        try {
+            if (!signer || !contract) return alert('Connect your wallet first');
+            const tx = await contract.acceptWager(id, { value: ethers.parseEther(amountEth.toString()) });
+            await tx.wait();
+            alert('Wager accepted! Good luck with your match.');
+            closeModal('wagerModal');
+            loadOpenWagers();
+        } catch (e) {
+            alert(e?.reason || e?.message || 'Accept failed');
+            console. error(e);
+        }
+    }
+
+    /***** WAGER LIST *****/
+    async function loadOpenWagers() {
+        const container = document.getElementById('gamesList');
+        container.innerHTML = '<div class="empty-state">Loading wagers...</div>';
+        
+        try {
+            await ensureProvider();
+            const readContract = contract || new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
+            const nextId = await readContract. nextId();
+            const ids = Array.from({ length: Number(nextId) }, (_, i) => i);
+
+            const reads = ids.map(id => readContract.wagers(id));
+            const results = await Promise.all(reads);
+
+            openWagers = results.map((w, idx) => ({
+                id: idx,
+                creator: w.creator,
+                opponent: w.opponent,
+                amount: Number(ethers.formatEther(w.amount)),
+                status: Number(w.status),
+                gameId: w.gameId,
+                claimant: w.claimant,
+                proofHash: w.proofHash,
+                proofTimestamp: w.proofTimestamp,
+                disputed:  w.disputed
+            })).filter(w => w.status !== 5); // Exclude cancelled
+
+            filterGames();
+        } catch (e) {
+            // For demo without contract
+            openWagers = [
+                { id: 0, creator: '0x1234567890abcdef1234567890abcdef12345678', opponent:  ethers.ZeroAddress, amount: 0.1, status: 0, gameId: '1', claimant: ethers.ZeroAddress, proofHash:  '', proofTimestamp: 0, disputed: false },
+                { id: 1, creator: '0xabcdef1234567890abcdef1234567890abcdef12', opponent: '0x9876543210fedcba9876543210fedcba98765432', amount: 0.25, status: 2, gameId: '3', claimant:  '0xabcdef1234567890abcdef1234567890abcdef12', proofHash: 'ipfs://QmExample123', proofTimestamp: Math.floor(Date.now()/1000) - 3600, disputed: false },
+                { id:  2, creator:  '0x5555555555555555555555555555555555555555', opponent:  '0x6666666666666666666666666666666666666666', amount: 0.5, status: 3, gameId: '2', claimant:  '0x5555555555555555555555555555555555555555', proofHash: 'ipfs://QmDisputed456', proofTimestamp: Math.floor(Date.now()/1000) - 7200, disputed: true }
+            ];
+            filterGames();
+        }
+    }
+
+    function filterGames() {
+        const q = document.getElementById('gameSearch')?.value?. toLowerCase() || '';
+        let filtered = [... openWagers];
+
+        if (currentCategory === 'pending') {
+            filtered = filtered.filter(w => w.status === 2 && !w.disputed);
+        } else if (currentCategory === 'disputed') {
+            filtered = filtered.filter(w => w.disputed);
+        } else if (currentCategory === 'mine' && userAccount) {
+            filtered = filtered.filter(w => 
+                w.creator.toLowerCase() === userAccount.toLowerCase() ||
+                w.opponent.toLowerCase() === userAccount.toLowerCase()
+            );
+        }
+
+        if (q) {
+            filtered = filtered.filter(w =>
+                w.creator.toLowerCase().includes(q) ||
+                w.opponent.toLowerCase().includes(q) ||
+                `${w.id}`.includes(q)
+            );
+        }
+
+        renderGames(filtered);
+    }
+
+    function filterCategory(cat, btn) {
+        currentCategory = cat;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterGames();
+    }
+
+    function renderGames(list) {
+        const container = document.getElementById('gamesList');
+        if (!list || !list.length) {
+            container.innerHTML = '<div class="empty-state">No wagers found.</div>';
+            return;
+        }
+
+        container.innerHTML = list.map(w => {
+            const game = games.find(g => g.id.toString() === w.gameId) || { name: 'Unknown', abbr: '?' };
+            let badge = '';
+            let badgeClass = '';
+            
+            if (w.disputed) {
+                badge = 'Disputed';
+                badgeClass = 'disputed';
+            } else if (w.status === 0) {
+                badge = w.opponent === ethers.ZeroAddress ? 'Open' : 'Direct';
+                badgeClass = '';
+            } else if (w.status === 1) {
+                badge = 'In Progress';
+                badgeClass = '';
+            } else if (w.status === 2) {
+                badge = 'Pending Proof';
+                badgeClass = 'pending';
+            } else if (w.status === 4) {
+                badge = 'Resolved';
+                badgeClass = 'verified';
+            }
+            
+            return `
+                <div class="game-item" onclick="openWagerModal(openWagers.find(x => x.id === ${w.id}))">
+                    <div class="game-item-icon">${game.abbr}</div>
+                    <div class="game-item-info">
+                        <div class="game-item-name">
+                            ${game.name}
+                            <span class="badge ${badgeClass}">${badge}</span>
+                        </div>
+                        <div class="game-item-details">
+                            ${shorten(w.creator)} vs ${shorten(w.opponent)} · #${w.id}
+                        </div>
+                    </div>
+                    <div class="game-item-right">
+                        <div class="game-item-prize-label">Pot</div>
+                        <div class="game-item-prize-value">${(w.amount * 2).toFixed(4)} ETH</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    /***** INIT *****/
+    document.addEventListener('DOMContentLoaded', () => {
+        updateAccountPreview();
+        loadOpenWagers();
+    });
+
+    // Wallet events
+    if (window.ethereum) {
+        window.ethereum. on('accountsChanged', () => {
+            userAccount = null;
+            signer = null;
+            contract = null;
+            document.getElementById('walletAddress').textContent = 'Not connected';
+            document.getElementById('walletDot').classList.remove('connected');
+            const btn = document.getElementById('connectBtn');
+            btn.textContent = 'Connect';
+            btn.disabled = false;
+        });
+        window.ethereum.on('chainChanged', () => window.location.reload());
+    }
+</script>
+</body>
+</html>
